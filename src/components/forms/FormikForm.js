@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import * as yup from "yup";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -18,6 +17,19 @@ export default function FormikFOrm() {
       .string("Enter your password")
       .min(8, "Password should be of minimum 8 characters length")
       .required("Password is required")
+      .matches(
+        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[&+$!* ])([a-zA-Z0-9&+$!* ]{8,})$",
+        "Need special character"
+      ),
+    confimPassword: yup
+      .string("Confim your password")
+      .required("Confim is required")
+      .when("password", {
+        is: (val) => (val && val.length > 0 ? true : false),
+        then: yup
+          .string()
+          .oneOf([yup.ref("password")], "Both password need to be the same !")
+      })
   });
 
   const formik = useFormik({
@@ -44,8 +56,8 @@ export default function FormikFOrm() {
               fullWidth
               id="firstName"
               name="firstName"
-              label="firstName"
-              placeholder="Jane"
+              label="FirstName"
+              placeholder="James"
               onChange={formik.handleChange}
               error={
                 formik.touched.firstName && Boolean(formik.errors.firstName)
@@ -56,8 +68,8 @@ export default function FormikFOrm() {
               fullWidth
               id="lastName"
               name="lastName"
-              label="lastName"
-              placeholder="Doe"
+              label="LastName"
+              placeholder="Bond"
               onChange={formik.handleChange}
               error={formik.touched.lastName && Boolean(formik.errors.lastName)}
               helperText={formik.touched.lastName && formik.errors.lastName}
@@ -67,6 +79,7 @@ export default function FormikFOrm() {
               id="email"
               name="email"
               label="Email"
+              placeholder="James@Bond.com"
               onChange={formik.handleChange}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
@@ -80,6 +93,21 @@ export default function FormikFOrm() {
               onChange={formik.handleChange}
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
+            />
+            <TextField
+              fullWidth
+              id="confimPassword"
+              name="confimPassword"
+              label="Confirm password"
+              type="password"
+              onChange={formik.handleChange}
+              error={
+                formik.touched.confimPassword &&
+                Boolean(formik.errors.confimPassword)
+              }
+              helperText={
+                formik.touched.confimPassword && formik.errors.confimPassword
+              }
             />
             <Button color="primary" variant="contained" fullWidth type="submit">
               Submit
