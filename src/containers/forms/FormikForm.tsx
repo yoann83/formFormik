@@ -1,10 +1,11 @@
-import React from "react";
-import * as yup from "yup";
 import { Button } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import { Formik, Form, useFormik } from "formik";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
+import { Form, Formik, useFormik } from "formik";
+import React from "react";
+import TranfertListComponent from "../../components/TranfertList";
+import * as yup from "yup";
 import "./forms.scss";
 
 export default function FormikFOrm() {
@@ -13,21 +14,23 @@ export default function FormikFOrm() {
 
   //FORM SCHEMA VALIDATOR
   const validationSchema = yup.object({
-    lastName: yup.string("Enter your Name").required("LastName is required"),
+    lastName: yup.string().required("LastName is required"),
     email: yup
-      .string("Enter your email")
+      .string()
       .email("Enter a valid email")
       .required("Email is required"),
     password: yup
-      .string("Enter your password")
+      .string()
       .min(8, "Password should be of minimum 8 characters length")
       .required("Password is required")
       .matches(
-        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[&+$!* ])([a-zA-Z0-9&+$!* ]{8,})$",
+        new RegExp(
+          "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[&+$!* ])([a-zA-Z0-9&+$!* ]{8,})$"
+        ),
         "Need special character"
       ),
     confimPassword: yup
-      .string("Confim your password")
+      .string()
       .required("Confim is required")
       .when("password", {
         is: (val) => (val && val.length > 0 ? true : false),
@@ -39,8 +42,8 @@ export default function FormikFOrm() {
     is_therms: yup.string().required("Select")
   });
 
-  const getThermsValue = (value) => {
-    value ? isTherms(false) : isTherms(true);
+  const getThermsValue = (value: boolean) => {
+    isTherms(!value);
   };
 
   const formik = useFormik({
@@ -154,6 +157,16 @@ export default function FormikFOrm() {
               }
               style={{ margin: "1em 0" }}
             />
+            <h4>What form with you?</h4>
+            <TranfertListComponent
+              list={[
+                "React Natif",
+                "Formik",
+                "MaterialUi",
+                "SurveyJs",
+                "MaterialSurvey"
+              ]}
+            />
             <FormControlLabel
               name="is_therms"
               value={formik.values.is_therms}
@@ -166,7 +179,7 @@ export default function FormikFOrm() {
               labelPlacement="end"
               style={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "right",
                 padding: "1em"
               }}
             />
