@@ -66,8 +66,6 @@ export default function TransfertList({ list }) {
     setLeft(left.concat(rightChecked));
     setRight(not(right, rightChecked));
     setChecked(not(checked, rightChecked));
-    const choices = [...rightChecked.concat(left)];
-    console.log(choices);
   };
 
   const handleAllLeft = () => {
