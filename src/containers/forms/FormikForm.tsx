@@ -7,10 +7,34 @@ import React from "react";
 import TranfertListComponent from "../../components/TranfertList";
 import * as yup from "yup";
 import "./forms.scss";
+import DispachContext from "../../contexts/DispachContext";
 
 export default function FormikFOrm() {
   const title = "formik & materail-ui";
   const [therms, isTherms] = React.useState(false);
+  const [choiceValue, setChoiceValue] = React.useState("");
+
+  //REDUCER
+  const initalState = {
+    choices: [choiceValue]
+  };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "CHOICES":
+        const newState = { ...state, choices: choiceValue };
+        return newState;
+      default:
+        return state;
+    }
+  };
+  const [state, dispatch] = React.useState(
+    React.useReducer(reducer, initalState)
+  );
+
+  const getData = () => {
+    console.log(initalState);
+  };
 
   //FORM SCHEMA VALIDATOR
   const validationSchema = yup.object({
@@ -42,7 +66,7 @@ export default function FormikFOrm() {
     is_therms: yup.string().required("Select")
   });
 
-  const getThermsValue = (value: boolean) => {
+  const getThermsValue = (value) => {
     isTherms(!value);
   };
 
@@ -158,15 +182,18 @@ export default function FormikFOrm() {
               style={{ margin: "1em 0" }}
             />
             <h4>What form with you?</h4>
-            <TranfertListComponent
-              list={[
-                "React Natif",
-                "Formik",
-                "MaterialUi",
-                "SurveyJs",
-                "MaterialSurvey"
-              ]}
-            />
+            <DispachContext.Provider value={state.choices}>
+              <p onClick={getData}>Toggle Theme</p>
+              <TranfertListComponent
+                list={[
+                  "React Natif",
+                  "Formik",
+                  "MaterialUi",
+                  "SurveyJs",
+                  "MaterialSurvey"
+                ]}
+              />
+            </DispachContext.Provider>
             <FormControlLabel
               name="is_therms"
               value={formik.values.is_therms}

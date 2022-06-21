@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
@@ -9,6 +9,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import "../styles.scss";
+import DispachContext from "../contexts/DispachContext";
 
 function not(a: readonly number[], b: readonly number[]) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -26,13 +27,12 @@ export default function TransfertList({ list }) {
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
 
-  const arrayList = useMemo(() => {
-    return list;
-  }, [list]);
+  //reducer
+  const [context, setContext] = useState(useContext(DispachContext));
 
   useEffect(() => {
-    setLeft(arrayList);
-  }, [arrayList]);
+    setLeft(list);
+  }, [list]);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
@@ -59,7 +59,10 @@ export default function TransfertList({ list }) {
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
     const choices = [...leftChecked.concat(right)];
-    console.log(choices);
+    setContext(choices);
+    setTimeout(() => {
+      console.log([context]);
+    }, 2000);
   };
 
   const handleCheckedLeft = () => {
@@ -76,36 +79,38 @@ export default function TransfertList({ list }) {
   };
 
   const customList = (items: readonly number[]) => (
-    <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
-      <List dense component="div" role="list">
-        {items.map((value: number, key) => {
-          const labelId = `${value}`;
+    <>
+      <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
+        <List dense component="div" role="list">
+          {items.map((value: number, key) => {
+            const labelId = `${value}`;
 
-          return (
-            <ListItem
-              key={key}
-              role="listitem"
-              button
-              onClick={handleToggle(value)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checked.indexOf(value) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  required={right.length <= 0 ? true : false}
-                  inputProps={{
-                    "aria-labelledby": labelId
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={labelId} />
-            </ListItem>
-          );
-        })}
-        <ListItem />
-      </List>
-    </Paper>
+            return (
+              <ListItem
+                key={key}
+                role="listitem"
+                button
+                onClick={handleToggle(value)}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    checked={checked.indexOf(value) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                    required={right.length <= 0 ? true : false}
+                    inputProps={{
+                      "aria-labelledby": labelId
+                    }}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={labelId} />
+              </ListItem>
+            );
+          })}
+          <ListItem />
+        </List>
+      </Paper>
+    </>
   );
 
   return (
