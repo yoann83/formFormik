@@ -3,7 +3,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import { Form, Formik, useFormik } from "formik";
-import React from "react";
+import { useState, useReducer, useEffect } from "react";
 import TranfertListComponent from "../../components/TranfertList";
 import * as yup from "yup";
 import "./forms.scss";
@@ -11,8 +11,13 @@ import DispachContext from "../../contexts/DispachContext";
 
 export default function FormikFOrm() {
   const title = "formik & materail-ui";
-  const [therms, isTherms] = React.useState(false);
-  const [choiceValue, setChoiceValue] = React.useState("");
+  const [therms, isTherms] = useState(false);
+  //test code
+  const [choiceValue, setChoiceValue] = useState("");
+  const [name, setName] = useState("");
+  useEffect(() => {
+    setName("Parent Name");
+  }, []);
 
   //REDUCER
   const initalState = {
@@ -28,9 +33,7 @@ export default function FormikFOrm() {
         return state;
     }
   };
-  const [state, dispatch] = React.useState(
-    React.useReducer(reducer, initalState)
-  );
+  const [state, dispatch] = useState(useReducer(reducer, initalState));
 
   const getData = () => {
     console.log(initalState);
@@ -182,7 +185,7 @@ export default function FormikFOrm() {
               style={{ margin: "1em 0" }}
             />
             <h4>What form with you?</h4>
-            <DispachContext.Provider value={state.choices}>
+            <DispachContext.Provider value={{ name, setName }}>
               <p onClick={getData}>Toggle Theme</p>
               <TranfertListComponent
                 list={[

@@ -25,10 +25,9 @@ export default function TransfertList({ list }) {
   const [right, setRight] = useState<readonly number[]>([]);
 
   const leftChecked = intersection(checked, left);
-  const rightChecked = intersection(checked, right);
 
   //reducer
-  const [context, setContext] = useState(useContext(DispachContext));
+  const { name, setName } = useContext(DispachContext);
 
   useEffect(() => {
     setLeft(list);
@@ -50,7 +49,7 @@ export default function TransfertList({ list }) {
   const handleAllRight = () => {
     setRight(right.concat(left));
     const choices = [...right.concat(left)];
-    console.log(choices);
+    setName(choices);
     setLeft([]);
   };
 
@@ -59,22 +58,13 @@ export default function TransfertList({ list }) {
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
     const choices = [...leftChecked.concat(right)];
-    setContext(choices);
-    setTimeout(() => {
-      console.log([context]);
-    }, 2000);
-  };
-
-  const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
+    setName(choices);
   };
 
   const handleAllLeft = () => {
     setLeft(left.concat(right));
     const choices = [];
-    console.log(choices);
+    setName(choices);
     setRight([]);
   };
 
@@ -142,16 +132,6 @@ export default function TransfertList({ list }) {
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.length === 0}
-            aria-label="move selected left"
-          >
-            &lt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
             onClick={handleAllLeft}
             disabled={right.length === 0}
             aria-label="move all left"
@@ -164,7 +144,10 @@ export default function TransfertList({ list }) {
         {right.length <= 0 ? (
           <Alert severity="info">Please, select your choice!</Alert>
         ) : (
-          customList(right)
+          [...new Set(name)].map((value: number, key) => {
+            const labelId = `${value}`;
+            return <ListItemText key={key}>{labelId}</ListItemText>;
+          })
         )}
       </Grid>
     </Grid>

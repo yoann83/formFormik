@@ -2,6 +2,6 @@
 
 import { createContext } from "react";
 
-const ThemeContext = createContext({});
+const DispachContext = createContext<any>({});
 
-export default ThemeContext;
+export default DispachContext;
