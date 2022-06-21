@@ -11,19 +11,16 @@ import DispachContext from "../../contexts/DispachContext";
 
 export default function FormikFOrm() {
   const title = "formik & materail-ui";
-  const [therms, isTherms] = useState(false);
-  //test code
-  const [choiceValue, setChoiceValue] = useState("");
-  const [name, setName] = useState("");
-  useEffect(() => {
-    setName("Parent Name");
-  }, []);
 
-  //REDUCER
-  const initalState = {
-    choices: [choiceValue]
+  //THERMS OF USE
+  const [therms, isTherms] = useState(false);
+  const getThermsValue = (value) => {
+    isTherms(!value);
   };
 
+  //REDUCER
+  const [choiceValue, setChoiceValue] = useState("");
+  const [name, setChoice] = useState("");
   const reducer = (state, action) => {
     switch (action.type) {
       case "CHOICES":
@@ -33,11 +30,9 @@ export default function FormikFOrm() {
         return state;
     }
   };
-  const [state, dispatch] = useState(useReducer(reducer, initalState));
-
-  const getData = () => {
-    console.log(initalState);
-  };
+  useReducer(reducer, {
+    choices: [choiceValue]
+  });
 
   //FORM SCHEMA VALIDATOR
   const validationSchema = yup.object({
@@ -69,10 +64,6 @@ export default function FormikFOrm() {
     is_therms: yup.string().required("Select")
   });
 
-  const getThermsValue = (value) => {
-    isTherms(!value);
-  };
-
   const formik = useFormik({
     initialValues: {
       lastName: "",
@@ -85,7 +76,11 @@ export default function FormikFOrm() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      alert(
+        JSON.stringify(values, null, 2).concat(
+          `,{"form": ` + JSON.stringify(name, null, 2)
+        ) + `}`
+      );
     }
   });
 
@@ -185,8 +180,7 @@ export default function FormikFOrm() {
               style={{ margin: "1em 0" }}
             />
             <h4>What form with you?</h4>
-            <DispachContext.Provider value={{ name, setName }}>
-              <p onClick={getData}>Toggle Theme</p>
+            <DispachContext.Provider value={{ name, setChoice }}>
               <TranfertListComponent
                 list={[
                   "React Natif",

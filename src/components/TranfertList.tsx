@@ -25,31 +25,23 @@ export default function TransfertList({ list }) {
   const [right, setRight] = useState<readonly number[]>([]);
 
   const leftChecked = intersection(checked, left);
-
-  //reducer
-  const { name, setName } = useContext(DispachContext);
-
-  useEffect(() => {
-    setLeft(list);
-  }, [list]);
+  const { name, setChoice } = useContext(DispachContext);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
-
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
     setChecked(newChecked);
   };
 
   const handleAllRight = () => {
     setRight(right.concat(left));
     const choices = [...right.concat(left)];
-    setName(choices);
+    setChoice(choices);
     setLeft([]);
   };
 
@@ -58,50 +50,52 @@ export default function TransfertList({ list }) {
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
     const choices = [...leftChecked.concat(right)];
-    setName(choices);
+    setChoice(choices);
   };
 
   const handleAllLeft = () => {
     setLeft(left.concat(right));
     const choices = [];
-    setName(choices);
+    setChoice(choices);
     setRight([]);
   };
 
   const customList = (items: readonly number[]) => (
-    <>
-      <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
-        <List dense component="div" role="list">
-          {items.map((value: number, key) => {
-            const labelId = `${value}`;
+    <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
+      <List dense component="div" role="list">
+        {items.map((value: number, key) => {
+          const labelId = `${value}`;
 
-            return (
-              <ListItem
-                key={key}
-                role="listitem"
-                button
-                onClick={handleToggle(value)}
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    checked={checked.indexOf(value) !== -1}
-                    tabIndex={-1}
-                    disableRipple
-                    required={right.length <= 0 ? true : false}
-                    inputProps={{
-                      "aria-labelledby": labelId
-                    }}
-                  />
-                </ListItemIcon>
-                <ListItemText id={labelId} primary={labelId} />
-              </ListItem>
-            );
-          })}
-          <ListItem />
-        </List>
-      </Paper>
-    </>
+          return (
+            <ListItem
+              key={key}
+              role="listitem"
+              button
+              onClick={handleToggle(value)}
+            >
+              <ListItemIcon>
+                <Checkbox
+                  checked={checked.indexOf(value) !== -1}
+                  tabIndex={-1}
+                  disableRipple
+                  required={right.length <= 0 ? true : false}
+                  inputProps={{
+                    "aria-labelledby": labelId
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText id={labelId} primary={labelId} />
+            </ListItem>
+          );
+        })}
+        <ListItem />
+      </List>
+    </Paper>
   );
+
+  useEffect(() => {
+    setLeft(list);
+  }, [list]);
 
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
@@ -145,8 +139,8 @@ export default function TransfertList({ list }) {
           <Alert severity="info">Please, select your choice!</Alert>
         ) : (
           [...new Set(name)].map((value: number, key) => {
-            const labelId = `${value}`;
-            return <ListItemText key={key}>{labelId}</ListItemText>;
+            const choiceSelected = `${value}`;
+            return <ListItemText key={key}>{choiceSelected}</ListItemText>;
           })
         )}
       </Grid>
