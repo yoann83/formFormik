@@ -3,14 +3,36 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import { Form, Formik, useFormik } from "formik";
-import React from "react";
+import { useState, useReducer, useEffect } from "react";
 import TranfertListComponent from "../../components/TranfertList";
 import * as yup from "yup";
 import "./forms.scss";
+import DispachContext from "../../contexts/DispachContext";
 
 export default function FormikFOrm() {
   const title = "formik & materail-ui";
-  const [therms, isTherms] = React.useState(false);
+
+  //THERMS OF USE
+  const [therms, isTherms] = useState(false);
+  const getThermsValue = (value) => {
+    isTherms(!value);
+  };
+
+  //REDUCER
+  const [choiceValue, setChoiceValue] = useState("");
+  const [name, setChoice] = useState("");
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "CHOICES":
+        const newState = { ...state, choices: choiceValue };
+        return newState;
+      default:
+        return state;
+    }
+  };
+  useReducer(reducer, {
+    choices: [choiceValue]
+  });
 
   //FORM SCHEMA VALIDATOR
   const validationSchema = yup.object({
@@ -42,10 +64,6 @@ export default function FormikFOrm() {
     is_therms: yup.string().required("Select")
   });
 
-  const getThermsValue = (value: boolean) => {
-    isTherms(!value);
-  };
-
   const formik = useFormik({
     initialValues: {
       lastName: "",
@@ -58,7 +76,11 @@ export default function FormikFOrm() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      alert(
+        JSON.stringify(values, null, 2).concat(
+          `,{"form": ` + JSON.stringify(name, null, 2)
+        ) + `}`
+      );
     }
   });
 
@@ -158,15 +180,17 @@ export default function FormikFOrm() {
               style={{ margin: "1em 0" }}
             />
             <h4>What form with you?</h4>
-            <TranfertListComponent
-              list={[
-                "React Natif",
-                "Formik",
-                "MaterialUi",
-                "SurveyJs",
-                "MaterialSurvey"
-              ]}
-            />
+            <DispachContext.Provider value={{ name, setChoice }}>
+              <TranfertListComponent
+                list={[
+                  "React Natif",
+                  "Formik",
+                  "MaterialUi",
+                  "SurveyJs",
+                  "MaterialSurvey"
+                ]}
+              />
+            </DispachContext.Provider>
             <FormControlLabel
               name="is_therms"
               value={formik.values.is_therms}

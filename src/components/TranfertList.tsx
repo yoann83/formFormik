@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
@@ -9,6 +9,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import "../styles.scss";
+import DispachContext from "../contexts/DispachContext";
 
 function not(a: readonly number[], b: readonly number[]) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -24,33 +25,23 @@ export default function TransfertList({ list }) {
   const [right, setRight] = useState<readonly number[]>([]);
 
   const leftChecked = intersection(checked, left);
-  const rightChecked = intersection(checked, right);
-
-  const arrayList = useMemo(() => {
-    return list;
-  }, [list]);
-
-  useEffect(() => {
-    setLeft(arrayList);
-  }, [arrayList]);
+  const { name, setChoice } = useContext(DispachContext);
 
   const handleToggle = (value: number) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
-
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
     setChecked(newChecked);
   };
 
   const handleAllRight = () => {
     setRight(right.concat(left));
     const choices = [...right.concat(left)];
-    console.log(choices);
+    setChoice(choices);
     setLeft([]);
   };
 
@@ -59,19 +50,13 @@ export default function TransfertList({ list }) {
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
     const choices = [...leftChecked.concat(right)];
-    console.log(choices);
-  };
-
-  const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
+    setChoice(choices);
   };
 
   const handleAllLeft = () => {
     setLeft(left.concat(right));
     const choices = [];
-    console.log(choices);
+    setChoice(choices);
     setRight([]);
   };
 
@@ -108,6 +93,10 @@ export default function TransfertList({ list }) {
     </Paper>
   );
 
+  useEffect(() => {
+    setLeft(list);
+  }, [list]);
+
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       <Grid item>{customList(left)}</Grid>
@@ -137,16 +126,6 @@ export default function TransfertList({ list }) {
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.length === 0}
-            aria-label="move selected left"
-          >
-            &lt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
             onClick={handleAllLeft}
             disabled={right.length === 0}
             aria-label="move all left"
@@ -159,7 +138,10 @@ export default function TransfertList({ list }) {
         {right.length <= 0 ? (
           <Alert severity="info">Please, select your choice!</Alert>
         ) : (
-          customList(right)
+          [...new Set(name)].map((value: number, key) => {
+            const choiceSelected = `${value}`;
+            return <ListItemText key={key}>{choiceSelected}</ListItemText>;
+          })
         )}
       </Grid>
     </Grid>
