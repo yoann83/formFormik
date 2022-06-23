@@ -3,13 +3,13 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import { Form, Formik, useFormik } from "formik";
-import { useState, useReducer, useEffect } from "react";
+import { useState, useReducer } from "react";
 import TranfertListComponent from "../../components/TranfertList";
 import * as yup from "yup";
 import "./forms.scss";
 import DispachContext from "../../contexts/DispachContext";
 
-export default function FormikFOrm() {
+export default function FormikForm() {
   const title = "formik & materail-ui";
 
   //THERMS OF USE
@@ -19,19 +19,18 @@ export default function FormikFOrm() {
   };
 
   //REDUCER
-  const [choiceValue, setChoiceValue] = useState("");
   const [name, setChoice] = useState("");
   const reducer = (state, action) => {
     switch (action.type) {
       case "CHOICES":
-        const newState = { ...state, choices: choiceValue };
+        const newState = { ...state, choices: "" };
         return newState;
       default:
         return state;
     }
   };
   useReducer(reducer, {
-    choices: [choiceValue]
+    choices: [""]
   });
 
   //FORM SCHEMA VALIDATOR
@@ -184,8 +183,7 @@ export default function FormikFOrm() {
               <TranfertListComponent
                 list={[
                   "React Natif",
-                  "Formik",
-                  "MaterialUi",
+                  "Formik & MaterialUi",
                   "SurveyJs",
                   "MaterialSurvey"
                 ]}
